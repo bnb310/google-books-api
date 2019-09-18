@@ -64,27 +64,28 @@ handleSubmit (e) {
   const url = `https://www.googleapis.com/books/v1/volumes?q=${searchTerm}&key=${apiKey}`;
   
   fetch (url)
-  .then (response => {
-    if(!response.ok) {
+  .then (res => {
+    if(!res.ok) {
         throw new Error('Something went wrong, please try again later');
       };
-    return response.json();   
+    return res.json();   
   })
-  .then (data => {
-    let results = data.response.map(items => {
-      return(
-        <div>
-          <h2 key = {items.id}>{items.volumeInfo.title}</h2>
-          <p>{items.volumeInfo.authors}</p>
-          <button className = 'more'>View Details</button>
-        </div>
-      )
-    
+  .then ((data) => {
+//    let searchResults = this.state.results.map(data => {
+//      return(
+//        <div>
+//          <h2 key = {data.items.id}>{data.items.volumeInfo.title}</h2>
+//          <p>{data.items.volumeInfo.authors}</p>
+//          <button className = 'more'>View Details</button>
+//        </div>
+//      )
+      this.setState({
+        results: data
+      })
   });  
-    this.setState({
-      results: results
-    })
-  })
+    console.log('pulled data!')
+    
+  
 }
 
 render () {
@@ -108,6 +109,9 @@ render () {
         <option value = 'paidEbooks'>Paid EBooks</option>
       </select>
       </form>
+      <div className = 'results'>
+        
+      </div>
     </div>
   );
 }
