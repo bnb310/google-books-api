@@ -1,25 +1,6 @@
 import React, { Component } from  'react';
 import './App.css';
 
-const options = {
-  method: 'GET',
-  body: JSON.stringify(),
-  headers: {
-    
-  }
-}
-
-function displayBooks (response) {
-    for (let i = 0; i < response.items.length; i++) {
-      return (
-      <div className = 'results'>
-      <h2>{response.items[i].title}</h2>
-      <button className = 'more'>View Details</button>
-      </div>
-    );
-    }
-    
-}
 
 class App extends Component {
   constructor(props) {
@@ -27,20 +8,24 @@ class App extends Component {
     this.state = {
       printType: 'all',
       bookType: 'all',
+      searchTerm: ' ',
       results: [],
     };
   }
 
-//  printTypeChanged {
-//    this.setState({
+  searchTermChanged(searchTerm) {
+    this.setState({searchTerm})
+  }
 
-//    })
-//  };
+  printTypeChanged(printType) {
+    this.setState({printType})
+  };
 
-//  ebookTypeChanged {
-//    this.setState({
-
-//    })
+  ebookTypeChanged(ebookType) {
+    this.setState({
+      ebookType
+    })
+  }
 
 displayBooks () {
   let searchResults = this.state.results.map((results, index) => {
@@ -59,33 +44,29 @@ displayBooks () {
 
 handleSubmit (e) {
   e.preventDefault();
-  const searchTerm = 'harry-potter'
   const apiKey = 'AIzaSyDmIrNEuMPwAX7J-3SOswjopfm7aWzXIHU'
-  const url = `https://www.googleapis.com/books/v1/volumes?q=${searchTerm}&key=${apiKey}`;
+  const url = `https://www.googleapis.com/books/v1/volumes?q=${this.state.searchTerm}&key=${apiKey}`;
   
-  fetch (url)
-  .then (res => {
-    if(!res.ok) {
-        throw new Error('Something went wrong, please try again later');
-      };
-    return res.json();   
-  })
-  .then ((data) => {
-//    let searchResults = this.state.results.map(data => {
-//      return(
-//        <div>
-//          <h2 key = {data.items.id}>{data.items.volumeInfo.title}</h2>
-//          <p>{data.items.volumeInfo.authors}</p>
-//          <button className = 'more'>View Details</button>
-//        </div>
-//      )
-      this.setState({
-        results: data
+  fetch(url)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("Something went wrong, please try again later");
+        }
+        return res.json();
       })
-  });  
-    console.log('pulled data!')
-    
-  
+      .then(data => {
+        let searchResults = data.items.map(item => {
+          return (
+            <div>
+              <h2 key={item.id}>{item.volumeInfo.title}</h2>
+              <p>{item.volumeInfo.authors}</p>
+            </div>
+          );
+        });
+        this.setState({
+          results: searchResults
+        });
+      });
 }
 
 render () {
@@ -93,16 +74,16 @@ render () {
     <div className="App">
       <form className = 'searchBar' onSubmit = {e => this.handleSubmit(e)}>
       <label htmlFor = 'searchBox'>Search:</label>
-      <input type = 'text' />
+      <input type = 'text' id = 'searchTerm' onChange = {e => this.searchTermChanged(e.target.value)} />
       <button type = 'submit'>Search</button>
 
-      <select className = 'printType' onChange = {e => this.printTypeChanged(e.target.value)}>
+      <select className = 'printType' id = 'printType' onChange = {e => this.printTypeChanged(e.target.value)}>
         <option value = 'all'>All</option>
         <option value = 'books'>Boooks</option>
         <option value = 'magazines'>Magazines</option>
       </select>
 
-      <select className = 'ebookType' onChange = {e => this.ebookTypeChanged(e.target.value)}>
+      <select className = 'ebookType' id = 'ebookType' onChange = {e => this.ebookTypeChanged(e.target.value)}>
         <option value = ''>All</option>
         <option value = 'allEbooks'>EBooks</option>
         <option value = 'freeEbooks'>Free EBooks</option>
@@ -110,6 +91,8 @@ render () {
       </select>
       </form>
       <div className = 'results'>
+        ({this.state.results.length} = 0) ? 'Search to see a list of books' : return ({this.state.results})
+        
         
       </div>
     </div>
