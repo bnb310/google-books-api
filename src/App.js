@@ -27,19 +27,7 @@ class App extends Component {
     })
   }
 
-displayBooks () {
-  let searchResults = this.state.results.map((results, index) => {
-      return(
-        <div>
-          <h2 key = {this.state.results.items.id}>{this.state.results.items.volumeInfo.title}</h2>
-          <p>{this.state.results.items.volumeInfo.authors}</p>
-          <button className = 'more'>View Details</button>
-        </div>
-      )
-    
-  });   
-  
-}
+
 
 
 handleSubmit (e) {
@@ -55,21 +43,22 @@ handleSubmit (e) {
         return res.json();
       })
       .then(data => {
-        let searchResults = data.items.map(item => {
-          return (
-            <div>
-              <h2 key={item.id}>{item.volumeInfo.title}</h2>
-              <p>{item.volumeInfo.authors}</p>
-            </div>
-          );
-        });
+       
         this.setState({
-          results: searchResults
+          results: data.items
         });
       });
 }
 
 render () {
+  let searchResults = this.state.results.map(item => {
+    return (
+      <div>
+        <h2 key={item.id}>{item.volumeInfo.title}</h2>
+        <p>{item.volumeInfo.authors}</p>
+      </div>
+    );
+  });
   return (
     <div className="App">
       <form className = 'searchBar' onSubmit = {e => this.handleSubmit(e)}>
@@ -91,7 +80,7 @@ render () {
       </select>
       </form>
       <div className = 'results'>
-        ({this.state.results.length} = 0) ? 'Search to see a list of books' : return ({this.state.results})
+        {this.state.results.length === 0 ? 'Search to see a list of books' : searchResults}
         
         
       </div>
